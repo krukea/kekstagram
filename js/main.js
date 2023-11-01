@@ -1,68 +1,83 @@
-/* eslint-disable no-console */
-/* eslint-disable radix */
-/*Функция для проверки длины строки.
- Она принимает строку, которую нужно проверить, и максимальную длину и возвращает true,
- если строка меньше или равна указанной длине, и false, если строка длиннее.
- Эта функция нам пригодится для валидации формы. Примеры использования функции:
- */
+// массив из 25 эл-тов
 
-const checkLength = (string, maxLength) => string.length <= maxLength;
-
-// Cтрока короче 20 символов
-console.log(checkLength('проверяемая строка', 20)); // true
-// Длина строки ровно 18 символов
-console.log(checkLength('проверяемая строка', 18)); // true
-// Строка длиннее 10 символов
-console.log(checkLength('проверяемая строка', 10)); // false
-
-/*Функция для проверки, является ли строка палиндромом.
-Палиндром — это слово или фраза, которые одинаково читаются и слева направо и справа налево. */
-
-const isPalyndrome = (string) => {
-  string = string.trim().replaceAll(' ', '').toLowerCase();
-
-  let newString = '';
-  for (let i = string.length - 1; i >= 0; i--) {
-    newString += string[i];
-  }
-
-  return string === newString;
-};
-// Строка является палиндромом
-console.log(isPalyndrome('топот')); // true
-// Несмотря на разный регистр, тоже палиндром
-console.log(isPalyndrome('ДовОд')); // true
-// Это не палиндром
-console.log(isPalyndrome('Кекс')); // false
-
-// Если хотите усложнить задание, предусмотрите случай, когда в строке встречаются пробелы. Они не должны учитываться при проверке!
-// Это палиндром
-console.log(isPalyndrome('Лёша на полке клопа нашёл ')); // true
-
-/*Функция принимает строку, извлекает содержащиеся в ней цифры от 0 до 9 и возвращает их в виде целого
-положительного числа. Если в строке нет ни одной цифры, функция должна вернуть NaN:
-Если хотите усложнить задание, предусмотрите случай, когда вместо строки приходит число.
-Обратите внимание, что возвращать функция по-прежнему должна только целые положительные числа:*/
-
-const getNumbers = (string) => {
-  string = string.toString();
-
-  let numbers = '';
-  for (let i = 0; i < string.length; i++) {
-    if (!isNaN(parseInt(string[i]))) {
-      numbers += string[i];
+/* const photo = {
+  id: 1, не повторяющийся 1 - 25
+  url: 'photos/1.jpg', номер картинки не повторяющийся 1 - 25
+  description: 'description',
+  likes: 10, случайное 15 - 200
+  comments: кол-во случайно 0 - 30, все комменты рандомные
+  [
+    {
+      id: 135, любое не повторяющееся число
+      avatar: 'img/avatar-6.svg', 1 - 6
+      message: 'В целом всё неплохо. Но не всё.', случайно из COMMENTS
+      name: 'Артём' случайно из USER_NAMES
     }
-  }
+  ]
+}; */
 
-  return parseInt(numbers);
+const COMMENTS = [
+  'Всё отлично!',
+  'В целом всё неплохо. Но не всё.',
+  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
+  'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
+  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
+  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
+];
+
+const USER_NAMES = ['Артём', 'Даша', 'Мария', 'Алексей', 'Николай', 'Галина'];
+
+const MAX_ID = 25;
+const MIN_LIKES = 15;
+const MAX_LIKES = 200;
+const MAX_COMMENTS = 30;
+
+const getRandomNumber = (min, max) => {
+  const lower = Math.ceil(Math.min(min, max));
+  const upper = Math.floor(Math.max(min, max));
+
+  return Math.floor(Math.random() * (upper - lower + 1) + lower);
 };
 
-console.log(getNumbers('2023 год')); // 2023
-console.log(getNumbers('ECMAScript 2022')); // 2022
-console.log(getNumbers('1 кефир, 0.5 батона')); // 105
-console.log(getNumbers('агент 007')); // 7
-console.log(getNumbers('а я томат')); // NaN
+const getRandomArrayElement = (array) => array[getRandomNumber(0, array.length - 1)];
 
-console.log(getNumbers(2023)); // 2023
-console.log(getNumbers(-1)); // 1
-console.log(getNumbers(1.5)); // 15
+const createRandomIdGenerator = (min, max) => {
+  const previousValues = [];
+
+  return function () {
+    let currentValue = getRandomNumber(min, max);
+    if (previousValues.length >= max - min + 1) {
+      console.error('Перебраны все числа в диапазоне');
+      return null;
+    }
+    while (previousValues.includes(currentValue)) {
+      currentValue = getRandomNumber(min, max);
+    }
+    previousValues.push(currentValue);
+
+    return currentValue;
+  };
+};
+
+//const generatePhotoId = createRandomIdGenerator(1, MAX_ID);
+//const generateCommentoId = createRandomIdGenerator(0, MAX_COMMENTS);
+
+const createComment = (id) => ({
+  id: id,
+  avatar: `img/avatar-${getRandomNumber(1, 6)}.svg`,
+  message: getRandomArrayElement(COMMENTS),
+  name: getRandomArrayElement(USER_NAMES)
+});
+
+const createPhoto = (id) => ({
+  id: id,
+  url: `photos/${id}.jpg`,
+  description: 'description',
+  likes: getRandomNumber(MIN_LIKES, MAX_LIKES),
+  comments: Array.from({ length: getRandomNumber(0, MAX_COMMENTS) }, (_, index) =>
+    createComment(index + 1)
+  )
+});
+
+const photos = Array.from({ length: MAX_ID }, (_, index) => createPhoto(index + 1));
+console.log(photos);
