@@ -15,11 +15,19 @@ const onDocumentKeyDown = (evt) => {
   }
 };
 
+const onClickOutsideModal = (evt) => {
+  if (!evt.target.closest('.pictures')) {
+    evt.preventDefault();
+    closeModal();
+  }
+};
+
 const closeModal = () => {
   body.classList.remove('modal-open');
   fullSizeContainer.classList.add('hidden');
   closeBtn.removeEventListener('click', closeModal);
   document.removeEventListener('keydown', onDocumentKeyDown);
+  document.removeEventListener('click', onClickOutsideModal);
 
   commentsCount.classList.remove('hidden');
   commentsLoader.classList.remove('hidden');
@@ -32,6 +40,7 @@ const openModal = (id) => {
   fullSizeContainer.classList.remove('hidden');
   closeBtn.addEventListener('click', closeModal);
   document.addEventListener('keydown', onDocumentKeyDown);
+  document.addEventListener('click', onClickOutsideModal);
 
   commentsCount.classList.add('hidden');
   commentsLoader.classList.add('hidden');
@@ -39,8 +48,8 @@ const openModal = (id) => {
   renderFullImg(id);
 };
 
-const onPreviewClick = function (evt) {
-  const previewContainer = evt.target.closest('.picture');
+const onPreviewClick = function ({ target }) {
+  const previewContainer = target.closest('.picture');
   if (previewContainer) {
     openModal(parseInt(previewContainer.dataset.id));
   }
