@@ -1,4 +1,5 @@
 import { generatedPreviews } from './previews.js';
+import { renderComments, onLoadCommentsClick } from './comments.js';
 
 const fullSizeContainer = document.querySelector('.big-picture');
 const fullSizeImg = fullSizeContainer.querySelector('.big-picture__img img');
@@ -6,10 +7,7 @@ const likesCount = fullSizeContainer.querySelector('.likes-count');
 const commentsList = fullSizeContainer.querySelector('.social__comments');
 const commentsCount = fullSizeContainer.querySelector('.comments-count');
 const caption = fullSizeContainer.querySelector('.social__caption');
-
-const commentTemplate = document
-  .querySelector('#comment')
-  .content.querySelector('.social__comment');
+const loadCommentsBtn = fullSizeImg.querySelector('.comments-loader');
 
 const renderFullImg = (id) => {
   const imgElement = generatedPreviews.find((item) => item.id === id);
@@ -22,24 +20,14 @@ const renderFullImg = (id) => {
   if (commentsNumber > 0) {
     commentsCount.textContent = commentsNumber;
     commentsList.append(renderComments(imgElement.comments));
+
+    if (commentsNumber > 5) {
+      loadCommentsBtn.classList.remove('hidden');
+      loadCommentsBtn.addEventListener('click', onLoadCommentsClick);
+    }
   }
 
   caption.textContent = imgElement.description;
-};
-
-const renderComments = (comments) => {
-  const commentsFragment = document.createDocumentFragment();
-  comments.forEach((comment) => {
-    const commentElement = commentTemplate.cloneNode(true);
-
-    commentElement.querySelector('.social__picture').src = comment.avatar;
-    commentElement.querySelector('.social__picture').alt = comment.name;
-    commentElement.querySelector('.social__text').textContent = comment.message;
-
-    commentsFragment.append(commentElement);
-  });
-
-  return commentsFragment;
 };
 
 const clearFullImg = () => {
@@ -48,6 +36,9 @@ const clearFullImg = () => {
   commentsCount.textContent = '';
   commentsList.innerHTML = '';
   caption.textContent = '';
+
+  loadCommentsBtn.classList.add('hidden');
+  loadCommentsBtn.removeEventListener('click', onLoadCommentsClick);
 };
 
-export { fullSizeContainer, renderFullImg, clearFullImg };
+export { fullSizeContainer, renderFullImg, clearFullImg, loadCommentsBtn };

@@ -29,9 +29,6 @@ const closeModal = () => {
   document.removeEventListener('keydown', onDocumentKeyDown);
   document.removeEventListener('click', onClickOutsideModal);
 
-  commentsCount.classList.remove('hidden');
-  commentsLoader.classList.remove('hidden');
-
   clearFullImg();
 };
 
@@ -41,9 +38,6 @@ const openModal = (id) => {
   closeBtn.addEventListener('click', closeModal);
   document.addEventListener('keydown', onDocumentKeyDown);
   document.addEventListener('click', onClickOutsideModal);
-
-  commentsCount.classList.add('hidden');
-  commentsLoader.classList.add('hidden');
 
   renderFullImg(id);
 };
