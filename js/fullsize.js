@@ -1,4 +1,3 @@
-import { generatedPreviews } from './previews.js';
 import { renderComments, onLoadCommentsClick } from './comments.js';
 
 const fullSizeContainer = document.querySelector('.big-picture');
@@ -7,11 +6,9 @@ const likesCount = fullSizeContainer.querySelector('.likes-count');
 const commentsList = fullSizeContainer.querySelector('.social__comments');
 const commentsCount = fullSizeContainer.querySelector('.comments-count');
 const caption = fullSizeContainer.querySelector('.social__caption');
-const loadCommentsBtn = fullSizeImg.querySelector('.comments-loader');
+const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
-const renderFullImg = (id) => {
-  const imgElement = generatedPreviews.find((item) => item.id === id);
-
+const renderFullImg = (imgElement) => {
   fullSizeImg.src = imgElement.url;
   fullSizeImg.alt = imgElement.description;
   likesCount.textContent = imgElement.likes;

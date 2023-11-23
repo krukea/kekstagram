@@ -13,6 +13,7 @@ const createPreview = ({ id, url, description, likes, comments }) => {
 
 const renderPreviews = (pictures, container) => {
   const previewsFragment = document.createDocumentFragment();
+
   pictures.forEach((picture) => {
     const preview = createPreview(picture);
     previewsFragment.append(preview);
