@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 import { isEscapeKey } from './utility.js';
 import { fullSizeContainer, renderFullImg, clearFullImg } from './fullsize.js';
+import { renderComments, clearComments } from './comments.js';
 
 const body = document.body;
 const closeBtn = fullSizeContainer.querySelector('.cancel');
@@ -27,6 +28,7 @@ const closeModal = () => {
   document.removeEventListener('click', onClickOutsideModal);
 
   clearFullImg();
+  clearComments();
 };
 
 const openModal = (picture) => {
@@ -37,6 +39,7 @@ const openModal = (picture) => {
   document.addEventListener('click', onClickOutsideModal);
 
   renderFullImg(picture);
+  renderComments(picture.comments);
 };
 
 export { openModal, closeModal };

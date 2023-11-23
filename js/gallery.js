@@ -11,7 +11,8 @@ const renderGallery = (pictures) => {
     }
 
     evt.preventDefault();
-    const picture = pictures.find((item) => item.id === +previewContainer.dataset.id);
+    const previewId = +previewContainer.dataset.id;
+    const picture = pictures.find((item) => item.id === previewId);
     openModal(picture);
   });
 
