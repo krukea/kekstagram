@@ -1,22 +1,24 @@
-import { generatePhotos } from './data.js';
-
-const previewsContainer = document.querySelector('.pictures');
 const previewTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const generatedPreviews = generatePhotos();
-
-const previewsFragment = document.createDocumentFragment();
-generatedPreviews.forEach((preview) => {
+const createPreview = ({ id, url, description, likes, comments }) => {
   const previewElement = previewTemplate.cloneNode(true);
-  previewElement.dataset.id = preview.id;
-  previewElement.querySelector('.picture__img').src = preview.url;
-  previewElement.querySelector('.picture__img').alt = preview.description;
-  previewElement.querySelector('.picture__likes').textContent = preview.likes;
-  previewElement.querySelector('.picture__comments').textContent = preview.comments.length;
+  previewElement.dataset.id = id;
+  previewElement.querySelector('.picture__img').src = url;
+  previewElement.querySelector('.picture__img').alt = description;
+  previewElement.querySelector('.picture__likes').textContent = likes;
+  previewElement.querySelector('.picture__comments').textContent = comments.length;
 
-  previewsFragment.append(previewElement);
-});
+  return previewElement;
+};
 
-previewsContainer.append(previewsFragment);
+const renderPreviews = (pictures, container) => {
+  const previewsFragment = document.createDocumentFragment();
+  pictures.forEach((picture) => {
+    const preview = createPreview(picture);
+    previewsFragment.append(preview);
+  });
 
-export { generatedPreviews };
+  container.append(previewsFragment);
+};
+
+export { renderPreviews };
