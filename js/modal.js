@@ -1,31 +1,17 @@
-/* eslint-disable no-use-before-define */
 import { isEscapeKey } from './utility.js';
 import { fullSizeContainer, renderFullImg, clearFullImg } from './fullsize.js';
 import { renderComments, clearComments } from './comments.js';
 
 const body = document.body;
 const closeBtn = fullSizeContainer.querySelector('.cancel');
-
-const onDocumentKeyDown = (evt) => {
-  if (isEscapeKey(evt)) {
-    evt.preventDefault();
-    closeModal();
-  }
-};
-
-const onClickOutsideModal = (evt) => {
-  if (!evt.target.closest('.pictures')) {
-    evt.preventDefault();
-    closeModal();
-  }
-};
+const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
 const closeModal = () => {
   body.classList.remove('modal-open');
   fullSizeContainer.classList.add('hidden');
   closeBtn.removeEventListener('click', closeModal);
   document.removeEventListener('keydown', onDocumentKeyDown);
-  document.removeEventListener('click', onClickOutsideModal);
+  //document.removeEventListener('click', onClickOutsideModal);
 
   clearFullImg();
   clearComments();
@@ -36,10 +22,32 @@ const openModal = (picture) => {
   fullSizeContainer.classList.remove('hidden');
   closeBtn.addEventListener('click', closeModal);
   document.addEventListener('keydown', onDocumentKeyDown);
-  document.addEventListener('click', onClickOutsideModal);
+  //document.addEventListener('click', onClickOutsideModal);
 
   renderFullImg(picture);
-  renderComments(picture.comments);
+  const comments = picture.comments;
+  if (comments.length > 0) {
+    renderComments(comments);
+  }
+
+  loadCommentsBtn.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    renderComments(comments);
+  });
 };
 
-export { openModal, closeModal };
+function onDocumentKeyDown(evt) {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeModal();
+  }
+}
+
+/* function onClickOutsideModal(evt) {
+  if (!evt.target.closest('.big-picture')) {
+    evt.preventDefault();
+    closeModal();
+  }
+} */
+
+export { openModal, closeModal, loadCommentsBtn };

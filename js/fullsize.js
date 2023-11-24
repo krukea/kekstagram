@@ -2,7 +2,6 @@ const fullSizeContainer = document.querySelector('.big-picture');
 const fullSizeImg = fullSizeContainer.querySelector('.big-picture__img img');
 const likesCount = fullSizeContainer.querySelector('.likes-count');
 const caption = fullSizeContainer.querySelector('.social__caption');
-const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
 const renderFullImg = ({ url, description, likes }) => {
   fullSizeImg.src = url;
@@ -18,4 +17,4 @@ const clearFullImg = () => {
   caption.textContent = '';
 };
 
-export { fullSizeContainer, renderFullImg, clearFullImg, loadCommentsBtn };
+export { fullSizeContainer, renderFullImg, clearFullImg };

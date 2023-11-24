@@ -1,10 +1,15 @@
-/* eslint-disable no-use-before-define */
-import { fullSizeContainer, loadCommentsBtn } from './fullsize.js';
+/* eslint-disable no-unused-vars */
+import { fullSizeContainer } from './fullsize.js';
+import { loadCommentsBtn } from './modal.js';
 
-const MAX_COMMENTS = 5;
+const COMMENTS_PER_LOAD = 5;
 
 const commentsList = fullSizeContainer.querySelector('.social__comments');
 const commentsCount = fullSizeContainer.querySelector('.comments-count');
+const commentsLoadedCount = fullSizeContainer.querySelector('.comments-loaded-count');
+
+let commentsShown = 0;
+let comments = [];
 
 const commentTemplate = document
   .querySelector('#comment')
@@ -20,39 +25,34 @@ const createComment = (comment) => {
   return commentElement;
 };
 
-const onLoadCommentsClick = () => {
-  // load 5 more comments
-  renderComments();
-  // if no more comments hide btn
-  loadCommentsBtn.classList.add('hidden');
-};
-
 const renderComments = (comments) => {
-  const commentsNumber = comments.length;
-  if (commentsNumber > 0) {
-    commentsCount.textContent = commentsNumber;
+  commentsShown = COMMENTS_PER_LOAD;
 
-    const commentsFragment = document.createDocumentFragment();
-    comments.forEach((comment) => {
-      const commentElement = createComment(comment);
-      commentsFragment.append(commentElement);
-    });
-
-    commentsList.append(commentsFragment);
-
-    if (commentsNumber > 5) {
-      loadCommentsBtn.classList.remove('hidden');
-      loadCommentsBtn.addEventListener('click', onLoadCommentsClick);
-    }
+  if (commentsShown >= comments.length) {
+    loadCommentsBtn.classList.add('hidden');
+    commentsShown = comments.length;
+  } else {
+    loadCommentsBtn.classList.remove('hidden');
   }
+
+  const commentsFragment = document.createDocumentFragment();
+  for (let i = 0; i < commentsShown; i++) {
+    const commentElement = createComment(comments[i]);
+    commentsFragment.append(commentElement);
+  }
+
+  commentsList.innerHTML = '';
+  commentsList.append(commentsFragment);
+  commentsLoadedCount.textContent = commentsShown;
+  commentsCount.textContent = comments.length;
 };
 
 const clearComments = () => {
+  commentsShown = 0;
   commentsCount.textContent = '';
   commentsList.innerHTML = '';
 
   loadCommentsBtn.classList.add('hidden');
-  loadCommentsBtn.removeEventListener('click', onLoadCommentsClick);
 };
 
 export { renderComments, clearComments };
