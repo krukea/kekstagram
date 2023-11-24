@@ -4,11 +4,11 @@ const likesCount = fullSizeContainer.querySelector('.likes-count');
 const caption = fullSizeContainer.querySelector('.social__caption');
 const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
-const renderFullImg = (imgElement) => {
-  fullSizeImg.src = imgElement.url;
-  fullSizeImg.alt = imgElement.description;
-  likesCount.textContent = imgElement.likes;
-  caption.textContent = imgElement.description;
+const renderFullImg = ({ url, description, likes }) => {
+  fullSizeImg.src = url;
+  fullSizeImg.alt = description;
+  likesCount.textContent = likes;
+  caption.textContent = description;
 };
 
 const clearFullImg = () => {
