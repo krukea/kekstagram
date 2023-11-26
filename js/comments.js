@@ -8,8 +8,7 @@ const commentsList = fullSizeContainer.querySelector('.social__comments');
 const commentsCount = fullSizeContainer.querySelector('.comments-count');
 const commentsLoadedCount = fullSizeContainer.querySelector('.comments-loaded-count');
 
-let commentsShown = 0;
-let comments = [];
+let commentsShown = COMMENTS_PER_LOAD;
 
 const commentTemplate = document
   .querySelector('#comment')
@@ -25,8 +24,10 @@ const createComment = (comment) => {
   return commentElement;
 };
 
-const renderComments = (comments) => {
-  commentsShown = COMMENTS_PER_LOAD;
+const renderComments = (comments, isShowMore = false) => {
+  if (isShowMore) {
+    commentsShown += COMMENTS_PER_LOAD;
+  }
 
   if (commentsShown >= comments.length) {
     loadCommentsBtn.classList.add('hidden');
@@ -48,7 +49,7 @@ const renderComments = (comments) => {
 };
 
 const clearComments = () => {
-  commentsShown = 0;
+  commentsShown = COMMENTS_PER_LOAD;
   commentsCount.textContent = '';
   commentsList.innerHTML = '';
 

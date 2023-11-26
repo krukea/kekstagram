@@ -32,7 +32,7 @@ const openModal = (picture) => {
 
   loadCommentsBtn.addEventListener('click', (evt) => {
     evt.preventDefault();
-    renderComments(comments);
+    renderComments(comments, true);
   });
 };
 
