@@ -1,5 +1,5 @@
 import { renderPreviews } from './previews.js';
-import { openModal } from './modal.js';
+import { toggleModal } from './modal.js';
 
 const previewsContainer = document.querySelector('.pictures');
 
@@ -13,7 +13,7 @@ const renderGallery = (pictures) => {
     evt.preventDefault();
     const previewId = +previewContainer.dataset.id;
     const picture = pictures.find((item) => item.id === previewId);
-    openModal(picture);
+    toggleModal(picture);
   });
 
   renderPreviews(pictures, previewsContainer);
