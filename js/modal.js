@@ -3,11 +3,25 @@ import { fullSizeContainer, renderFullImg, clearFullImg } from './fullsize.js';
 import { renderComments, clearComments } from './comments.js';
 
 const body = document.body;
-const closeBtn = fullSizeContainer.querySelector('.cancel');
 const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
-function toggleModal(picture) {
-  const comments = picture.comments;
+let modalType;
+let modalElement;
+
+function toggleModal(modalClass, picture) {
+  let comments;
+
+  if (modalClass === 'big-picture') {
+    modalType = 'fullsize';
+    modalElement = fullSizeContainer;
+
+    comments = picture.comments;
+  } else if (modalClass === 'upload') {
+    modalType = 'upload';
+    modalElement = document.querySelector('.img-upload__overlay');
+  }
+
+  const closeBtn = modalElement.querySelector('.cancel');
 
   function onDocumentKeyDown(evt) {
     if (isEscapeKey(evt)) {
@@ -30,34 +44,41 @@ function toggleModal(picture) {
 
   function closeModal() {
     body.classList.remove('modal-open');
-    fullSizeContainer.classList.add('hidden');
+    modalElement.classList.add('hidden');
     closeBtn.removeEventListener('click', closeModal);
     document.removeEventListener('keydown', onDocumentKeyDown);
     //document.removeEventListener('click', onClickOutsideModal);
 
-    loadCommentsBtn.removeEventListener('click', onLoadMore);
+    if (modalType === 'fullsize') {
+      loadCommentsBtn.removeEventListener('click', onLoadMore);
 
-    clearFullImg();
-    clearComments();
+      clearFullImg();
+      clearComments();
+    } else if (modalType === 'upload') {
+      const imgInput = document.querySelector('.img-upload__input');
+      imgInput.value = '';
+    }
   }
 
   const openModal = () => {
     body.classList.add('modal-open');
-    fullSizeContainer.classList.remove('hidden');
+    modalElement.classList.remove('hidden');
     closeBtn.addEventListener('click', closeModal);
     document.addEventListener('keydown', onDocumentKeyDown);
     //addEventListener('click', onClickOutsideModal);
 
-    renderFullImg(picture);
+    if (modalType === 'fullsize') {
+      renderFullImg(picture);
 
-    if (comments.length > 0) {
-      renderComments(comments);
+      if (comments.length > 0) {
+        renderComments(comments);
+      }
+
+      loadCommentsBtn.addEventListener('click', onLoadMore);
     }
-
-    loadCommentsBtn.addEventListener('click', onLoadMore);
   };
 
-  if (fullSizeContainer.classList.contains('hidden')) {
+  if (modalElement.classList.contains('hidden')) {
     openModal(picture);
   } else {
     closeModal();
