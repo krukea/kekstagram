@@ -13,7 +13,6 @@ const createRandomIdGenerator = (min, max) => {
   return function () {
     let currentValue = getRandomNumber(min, max);
     if (previousValues.length >= max - min + 1) {
-      console.error('Перебраны все числа в диапазоне');
       return null;
     }
     while (previousValues.includes(currentValue)) {

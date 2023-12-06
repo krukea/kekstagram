@@ -13,7 +13,7 @@ const renderGallery = (pictures) => {
     evt.preventDefault();
     const previewId = +previewContainer.dataset.id;
     const picture = pictures.find((item) => item.id === previewId);
-    toggleModal(picture);
+    toggleModal('big-picture', picture);
   });
 
   renderPreviews(pictures, previewsContainer);
