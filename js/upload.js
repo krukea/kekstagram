@@ -1,27 +1,50 @@
 import { toggleModal } from './modal.js';
 
+const TAGS_ERRORS = {
+  length: 'Превышено количество хэш-тегов',
+  repeat: 'Хэш-теги повторяются',
+  invalid: 'Введён невалидный хэш-тег'
+};
+
+let hashErrors;
 const validateHashTags = (value) => {
-  const hashTags = value.split(' ');
+  hashErrors = [];
+  const hashTags = value.trim().split(' ');
   if (hashTags.length > 5) {
+    if (!hashErrors.includes('length')) {
+      hashErrors.push('length');
+    }
     return false;
   }
 
   const checkedHashTags = [];
   hashTags.forEach((tag) => {
     if (checkedHashTags.includes(tag)) {
+      if (!hashErrors.includes('repeat')) {
+        hashErrors.push('repeat');
+      }
       return false;
     }
 
     const check = /^#[a-zа-яё0-9]{1,19}$/i;
-    if (!check.test()) {
+    if (!check.test(tag)) {
+      if (!hashErrors.includes('invalid')) {
+        hashErrors.push('invalid');
+      }
+
       return false;
     }
 
     checkedHashTags.push(tag);
   });
 
-  return checkedHashTags.length > 0;
+  if (checkedHashTags.length === hashTags.length) {
+    hashErrors = [];
+    return true;
+  }
 };
+
+const getHashTagErrorMessage = () => hashErrors.map((item) => TAGS_ERRORS[item]);
 
 const validateDescription = (value) => value.length <= 140;
 
@@ -36,11 +59,11 @@ const validateForm = function (evt) {
     uploadForm,
     {
       classTo: 'img-upload__field-wrapper',
-      errorClass: 'form__item--invalid',
-      successClass: 'form__item--valid',
+      errorClass: 'img-upload__field--invalid',
+      successClass: 'img-upload__field--valid',
       errorTextParent: 'img-upload__field-wrapper',
       errorTextTag: 'span',
-      errorTextClass: 'form__error'
+      errorTextClass: 'img-upload__error'
     },
     false
   );
@@ -48,14 +71,18 @@ const validateForm = function (evt) {
   const hashTags = uploadForm.querySelector('#hashtags');
   const description = uploadForm.querySelector('#description');
   if (hashTags.value !== '') {
-    pristine.addValidator(hashTags, validateHashTags, 'hash error');
+    pristine.addValidator(hashTags, validateHashTags, getHashTagErrorMessage);
   }
   if (description.value !== '') {
-    pristine.addValidator(description, validateDescription, 'description error');
+    pristine.addValidator(
+      description,
+      validateDescription,
+      'Длина текста не должна превышать 140 символов'
+    );
   }
 
   if (pristine.validate()) {
-    uploadForm.submit();
+    //uploadForm.submit();
   }
 };
 
