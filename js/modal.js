@@ -1,6 +1,7 @@
 import { isEscapeKey } from './utility.js';
 import { fullSizeContainer, renderFullImg, clearFullImg } from './fullsize.js';
 import { renderComments, clearComments } from './comments.js';
+import { clearUploadForm } from './upload.js';
 
 const body = document.body;
 const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
@@ -55,8 +56,7 @@ function toggleModal(modalClass, picture) {
       clearFullImg();
       clearComments();
     } else if (modalType === 'upload') {
-      const imgInput = document.querySelector('.img-upload__input');
-      imgInput.value = '';
+      clearUploadForm();
     }
   }
 

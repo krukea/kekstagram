@@ -6,6 +6,16 @@ const TAGS_ERRORS = {
   invalid: 'Введён невалидный хэш-тег'
 };
 
+const uploadForm = document.querySelector('.img-upload__form');
+const hashTagsInput = uploadForm.querySelector('#hashtags');
+const description = uploadForm.querySelector('#description');
+
+const clearUploadForm = () => {
+  document.querySelector('.img-upload__input').value = '';
+  hashTagsInput.value = '';
+  description.value = '';
+};
+
 let hashErrors;
 const validateHashTags = (value) => {
   hashErrors = [];
@@ -54,7 +64,6 @@ const validateDescription = (value) => value.length <= 140;
 const validateForm = function (evt) {
   evt.preventDefault();
 
-  const uploadForm = this;
   const pristine = new Pristine(
     uploadForm,
     {
@@ -68,10 +77,8 @@ const validateForm = function (evt) {
     false
   );
 
-  const hashTags = uploadForm.querySelector('#hashtags');
-  const description = uploadForm.querySelector('#description');
-  if (hashTags.value !== '') {
-    pristine.addValidator(hashTags, validateHashTags, getHashTagErrorMessage);
+  if (hashTagsInput.value !== '') {
+    pristine.addValidator(hashTagsInput, validateHashTags, getHashTagErrorMessage);
   }
   if (description.value !== '') {
     pristine.addValidator(
@@ -93,8 +100,10 @@ const renderUploadImage = () => {
     toggleModal('upload');
   });
 
-  const form = document.querySelector('.img-upload__form');
-  form.addEventListener('submit', validateForm);
+  uploadForm.addEventListener('submit', validateForm);
+  uploadForm.addEventListener('keydown', (evt) => {
+    evt.stopPropagation();
+  });
 };
 
-export { renderUploadImage };
+export { renderUploadImage, clearUploadForm };
