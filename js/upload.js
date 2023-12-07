@@ -1,4 +1,5 @@
 import { toggleModal } from './modal.js';
+import { changeScale, changeFilter, createSlider } from './edit-photo.js';
 
 const TAGS_ERRORS = {
   length: 'Превышено количество хэш-тегов',
@@ -58,9 +59,6 @@ const getHashTagErrorMessage = () => hashErrors.map((item) => TAGS_ERRORS[item])
 
 const validateDescription = (value) => value.length <= 140;
 
-/*если фокус находится в поле ввода хэш-тега или комментария, нажатие на Esc не должно приводить к закрытию формы
-  редактирования изображения. */
-
 const validateForm = function (evt) {
   evt.preventDefault();
 
@@ -104,6 +102,19 @@ const renderUploadImage = () => {
   uploadForm.addEventListener('keydown', (evt) => {
     evt.stopPropagation();
   });
+
+  /* Edit image */
+  const scaleUpBtn = document.querySelector('.scale__control--bigger');
+  const scaleDownBtn = document.querySelector('.scale__control--smaller');
+  scaleUpBtn.addEventListener('click', changeScale);
+  scaleDownBtn.addEventListener('click', changeScale);
+
+  const filterOptions = uploadForm.querySelectorAll('.effects__radio');
+  filterOptions.forEach(() => {
+    addEventListener('change', changeFilter);
+  });
+
+  createSlider();
 };
 
 export { renderUploadImage, clearUploadForm };
