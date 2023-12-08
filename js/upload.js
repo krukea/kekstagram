@@ -87,6 +87,10 @@ const validateForm = function (evt) {
   }
 
   if (pristine.validate()) {
+    const formData = new FormData(uploadForm);
+    for (const [key, value] of formData) {
+      console.log(`${key}: ${value}\n`);
+    }
     //uploadForm.submit();
   }
 };

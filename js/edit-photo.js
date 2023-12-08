@@ -3,6 +3,7 @@ const imgPreview = document.querySelector('.img-upload__preview').querySelector(
 const sliderContainer = document.querySelector('.img-upload__effect-level');
 const sliderElement = document.querySelector('.effect-level__slider');
 const sliderElementValue = document.querySelector('.effect-level__value');
+let filterName;
 
 const changeScale = (evt) => {
   const scaleUp = evt.target.classList.contains('scale__control--bigger');
@@ -26,11 +27,6 @@ const changeScale = (evt) => {
   scaleValueInput.value = scaleNumValue + '%';
   imgPreview.style.transform = `scale(${scaleNumValue / 100})`;
 };
-
-/*
-2.2. Наложение эффекта на изображение:
-
-Интенсивность эффекта регулируется перемещением ползунка в слайдере.*/
 
 const createSlider = () => {
   sliderContainer.classList.add('hidden');
@@ -56,9 +52,8 @@ const createSlider = () => {
 
   sliderElement.noUiSlider.on('update', () => {
     const sliderValue = sliderElement.noUiSlider.get();
-    console.log(sliderValue);
     sliderElementValue.value = sliderValue;
-    changeFilterIntensity(sliderValue);
+    changeFilterIntensity(filterName, sliderValue);
   });
 };
 
@@ -74,7 +69,19 @@ const setFilterOptions = ({ min, max, start, step }) => {
   });
 };
 
-const changeFilterIntensity = (value) => {};
+const changeFilterIntensity = (filterName, filterIntensity) => {
+  let suffix = '';
+  switch (filterName) {
+    case 'invert':
+      suffix = '%';
+      break;
+    case 'blur':
+      suffix = 'px';
+      break;
+  }
+
+  imgPreview.style.filter = `${filterName}(${filterIntensity}${suffix})`;
+};
 
 const changeFilter = (evt) => {
   const filterType = evt.target.value;
@@ -87,8 +94,7 @@ const changeFilter = (evt) => {
   }
 
   sliderContainer.classList.remove('hidden');
-  let filterName = filterType;
-  let defaultIntensity = 1;
+  filterName = filterType;
   let filterOptions = {
     min: 0,
     max: 1,
@@ -102,7 +108,6 @@ const changeFilter = (evt) => {
       break;
     case 'marvin':
       filterName = 'invert';
-      defaultIntensity = '100%';
 
       filterOptions.max = 100;
       filterOptions.start = 100;
@@ -110,14 +115,12 @@ const changeFilter = (evt) => {
       break;
     case 'phobos':
       filterName = 'blur';
-      defaultIntensity = '3px';
 
       filterOptions.max = 3;
       filterOptions.start = 3;
       break;
     case 'heat':
       filterName = 'brightness';
-      defaultIntensity = 3;
 
       filterOptions.min = 1;
       filterOptions.max = 3;
@@ -125,7 +128,7 @@ const changeFilter = (evt) => {
       break;
   }
 
-  imgPreview.style.filter = `${filterName}(${defaultIntensity})`;
+  imgPreview.style.filter = changeFilterIntensity(filterName, filterOptions.start);
 
   setFilterOptions(filterOptions);
 };
