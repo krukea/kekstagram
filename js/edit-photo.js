@@ -53,7 +53,7 @@ const createSlider = () => {
   sliderElement.noUiSlider.on('update', () => {
     const sliderValue = sliderElement.noUiSlider.get();
     sliderElementValue.value = sliderValue;
-    changeFilterIntensity(filterName, sliderValue);
+    changeFilterOpacity(filterName, sliderValue);
   });
 };
 
@@ -69,7 +69,7 @@ const setFilterOptions = ({ min, max, start, step }) => {
   });
 };
 
-const changeFilterIntensity = (filterName, filterIntensity) => {
+const changeFilterOpacity = (filterName, filterOpacity) => {
   let suffix = '';
   switch (filterName) {
     case 'invert':
@@ -80,7 +80,7 @@ const changeFilterIntensity = (filterName, filterIntensity) => {
       break;
   }
 
-  imgPreview.style.filter = `${filterName}(${filterIntensity}${suffix})`;
+  imgPreview.style.filter = `${filterName}(${filterOpacity}${suffix})`;
 };
 
 const changeFilter = (evt) => {
@@ -128,7 +128,7 @@ const changeFilter = (evt) => {
       break;
   }
 
-  imgPreview.style.filter = changeFilterIntensity(filterName, filterOptions.start);
+  imgPreview.style.filter = changeFilterOpacity(filterName, filterOptions.start);
 
   setFilterOptions(filterOptions);
 };
