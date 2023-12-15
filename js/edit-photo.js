@@ -1,36 +1,99 @@
 const SCALE_STEP = 25;
+const MIN_SCALE = 25;
+const MAX_SCALE = 100;
+const DEFAULT_SCALE = 100;
+const DEFAULT_FILTER = 'none';
+const scaleValueInput = document.querySelector('.scale__control--value');
 const imgPreview = document.querySelector('.img-upload__preview').querySelector('img');
 const sliderContainer = document.querySelector('.img-upload__effect-level');
 const sliderElement = document.querySelector('.effect-level__slider');
 const sliderElementValue = document.querySelector('.effect-level__value');
-let filterName;
+let chosenFilter = DEFAULT_FILTER;
 
-const changeScale = (evt) => {
-  const scaleUp = evt.target.classList.contains('scale__control--bigger');
-  const scaleValueInput = document.querySelector('.scale__control--value');
-  let scaleNumValue = parseInt(scaleValueInput.value.slice(0, -1));
-
-  if (scaleUp) {
-    if (scaleNumValue === 100) {
-      return;
-    }
-
-    scaleNumValue += SCALE_STEP;
-  } else {
-    if (scaleNumValue === SCALE_STEP) {
-      return;
-    }
-
-    scaleNumValue -= SCALE_STEP;
+const filterOptions = {
+  none: {
+    style: '',
+    unit: '',
+    min: 0,
+    max: 1,
+    step: 0.1
+  },
+  chrome: {
+    style: 'grayscale',
+    unit: '',
+    min: 0,
+    max: 1,
+    step: 0.1
+  },
+  sepia: {
+    style: 'sepia',
+    unit: '',
+    min: 0,
+    max: 1,
+    step: 0.1
+  },
+  marvin: {
+    style: 'invert',
+    unit: '%',
+    min: 0,
+    max: 100,
+    step: 1
+  },
+  phobos: {
+    style: 'blur',
+    unit: 'px',
+    min: 0,
+    max: 3,
+    step: 0.1
+  },
+  heat: {
+    style: 'brightness',
+    unit: '',
+    min: 1,
+    max: 3,
+    step: 0.1
   }
+};
 
-  scaleValueInput.value = scaleNumValue + '%';
-  imgPreview.style.transform = `scale(${scaleNumValue / 100})`;
+const changeScale = (value) => {
+  scaleValueInput.value = value + '%';
+  imgPreview.style.transform = `scale(${value / 100})`;
+};
+
+const scaleUp = () => {
+  changeScale(Math.min(parseInt(scaleValueInput.value) + SCALE_STEP, MAX_SCALE));
+};
+
+const scaleDown = () => {
+  changeScale(Math.max(parseInt(scaleValueInput.value) - SCALE_STEP, MIN_SCALE));
+};
+
+const resetScale = () => changeScale(DEFAULT_SCALE);
+
+const hideSlider = () => {
+  imgPreview.style.filter = '';
+  sliderContainer.classList.add('hidden');
+  sliderElementValue.value = 0;
+};
+
+const showSlider = () => {
+  if (sliderContainer.classList.contains('hidden')) {
+    sliderContainer.classList.remove('hidden');
+  }
+};
+
+const destroySlider = () => {
+  if (sliderElement.noUiSlider) {
+    sliderElement.noUiSlider.destroy();
+  }
 };
 
 const createSlider = () => {
-  sliderContainer.classList.add('hidden');
+  if (chosenFilter === DEFAULT_FILTER) {
+    hideSlider();
+  }
 
+  showSlider();
   noUiSlider.create(sliderElement, {
     range: {
       min: 0,
@@ -53,84 +116,42 @@ const createSlider = () => {
   sliderElement.noUiSlider.on('update', () => {
     const sliderValue = sliderElement.noUiSlider.get();
     sliderElementValue.value = sliderValue;
-    changeFilterOpacity(filterName, sliderValue);
+    changeFilterOpacity(filterOptions[chosenFilter], sliderValue);
   });
 };
 
-const setFilterOptions = ({ min, max, start, step }) => {
-  sliderElementValue.value = start;
+const setFilterOptions = ({ min, max, step }) => {
+  sliderElementValue.value = max;
   sliderElement.noUiSlider.updateOptions({
     range: {
       min: min,
       max: max
     },
-    start: start,
+    start: max,
     step: step
   });
 };
 
-const changeFilterOpacity = (filterName, filterOpacity) => {
-  let suffix = '';
-  switch (filterName) {
-    case 'invert':
-      suffix = '%';
-      break;
-    case 'blur':
-      suffix = 'px';
-      break;
-  }
-
-  imgPreview.style.filter = `${filterName}(${filterOpacity}${suffix})`;
+const changeFilterOpacity = ({ style, start, unit }, value = start) => {
+  imgPreview.style.filter = `${style}(${value}${unit})`;
 };
 
 const changeFilter = (evt) => {
   const filterType = evt.target.value;
 
-  if (filterType === 'none') {
-    imgPreview.style.filter = '';
-    sliderContainer.classList.add('hidden');
-    sliderElementValue.value = 0;
+  if (filterType === DEFAULT_FILTER) {
+    hideSlider();
     return;
   }
 
-  sliderContainer.classList.remove('hidden');
-  filterName = filterType;
-  let filterOptions = {
-    min: 0,
-    max: 1,
-    start: 1,
-    step: 0.1
-  };
+  showSlider();
 
-  switch (filterType) {
-    case 'chrome':
-      filterName = 'grayscale';
-      break;
-    case 'marvin':
-      filterName = 'invert';
+  chosenFilter = filterType;
+  const newFilter = filterOptions[filterType];
 
-      filterOptions.max = 100;
-      filterOptions.start = 100;
-      filterOptions.step = 1;
-      break;
-    case 'phobos':
-      filterName = 'blur';
+  imgPreview.style.filter = changeFilterOpacity(newFilter);
 
-      filterOptions.max = 3;
-      filterOptions.start = 3;
-      break;
-    case 'heat':
-      filterName = 'brightness';
-
-      filterOptions.min = 1;
-      filterOptions.max = 3;
-      filterOptions.start = 3;
-      break;
-  }
-
-  imgPreview.style.filter = changeFilterOpacity(filterName, filterOptions.start);
-
-  setFilterOptions(filterOptions);
+  setFilterOptions(newFilter);
 };
 
-export { changeScale, changeFilter, createSlider };
+export { scaleUp, scaleDown, resetScale, changeFilter, createSlider, destroySlider };

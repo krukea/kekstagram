@@ -701,7 +701,7 @@ main {
 
 .img-upload__field-wrapper--error {
   display: block;
-  margin-bottom: 20px;
+  padding: 10px 0;
 }
 
 /**

@@ -1,6 +1,13 @@
 import { isEscapeKey } from './utility.js';
 import { toggleModal } from './modal.js';
-import { changeScale, changeFilter, createSlider } from './edit-photo.js';
+import {
+  scaleUp,
+  scaleDown,
+  resetScale,
+  changeFilter,
+  createSlider,
+  destroySlider
+} from './edit-photo.js';
 
 const TAGS_ERRORS = {
   length: 'Превышено количество хэш-тегов',
@@ -27,6 +34,8 @@ const pristine = new Pristine(uploadForm, {
 const clearUploadForm = () => {
   uploadForm.reset();
   pristine.reset();
+  resetScale();
+  destroySlider();
 };
 
 const normalizeHashtags = (value) =>
@@ -112,12 +121,12 @@ const renderUploadImage = () => {
   /* Edit image */
   const scaleUpBtn = document.querySelector('.scale__control--bigger');
   const scaleDownBtn = document.querySelector('.scale__control--smaller');
-  scaleUpBtn.addEventListener('click', changeScale);
-  scaleDownBtn.addEventListener('click', changeScale);
+  scaleUpBtn.addEventListener('click', scaleUp);
+  scaleDownBtn.addEventListener('click', scaleDown);
 
   const filterOptions = uploadForm.querySelectorAll('.effects__radio');
-  filterOptions.forEach(() => {
-    addEventListener('change', changeFilter);
+  filterOptions.forEach((option) => {
+    option.addEventListener('change', changeFilter);
   });
 
   createSlider();
