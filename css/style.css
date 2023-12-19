@@ -699,10 +699,9 @@ main {
   border-radius: 5px;
 }
 
-.img-upload__error {
+.img-upload__field-wrapper--error {
   display: block;
-  margin-top: -10px;
-  margin-bottom: 20px;
+  padding: 10px 0;
 }
 
 /**

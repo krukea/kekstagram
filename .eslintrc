@@ -1,4 +1,5 @@
 root: true
+radix: false
 
 parserOptions:
   ecmaVersion: 2022
