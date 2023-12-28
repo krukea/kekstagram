@@ -6,20 +6,27 @@ import { clearUploadForm } from './upload.js';
 const body = document.body;
 const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
-let modalType;
 let modalElement;
 
-function toggleModal(modalClass, picture) {
+function toggleModal(modalType, picture, { ok, msg } = {}) {
   let comments;
 
-  if (modalClass === 'big-picture') {
-    modalType = 'fullsize';
-    modalElement = fullSizeContainer;
+  switch (modalType) {
+    case 'fullsize':
+      modalElement = fullSizeContainer;
+      comments = picture.comments;
+      break;
 
-    comments = picture.comments;
-  } else if (modalClass === 'upload') {
-    modalType = 'upload';
-    modalElement = document.querySelector('.img-upload__overlay');
+    case 'upload':
+      modalElement = document.querySelector('.img-upload__overlay');
+      break;
+
+    case 'message':
+      modalElement = document.querySelector('.img-upload__overlay');
+      break;
+
+    default:
+      break;
   }
 
   const closeBtn = modalElement.querySelector('.cancel');
@@ -50,13 +57,24 @@ function toggleModal(modalClass, picture) {
     document.removeEventListener('keydown', onDocumentKeyDown);
     //document.removeEventListener('click', onClickOutsideModal);
 
-    if (modalType === 'fullsize') {
-      loadCommentsBtn.removeEventListener('click', onLoadMore);
+    switch (modalType) {
+      case 'fullsize':
+        loadCommentsBtn.removeEventListener('click', onLoadMore);
 
-      clearFullImg();
-      clearComments();
-    } else if (modalType === 'upload') {
-      clearUploadForm();
+        clearFullImg();
+        clearComments();
+        break;
+
+      case 'upload':
+        clearUploadForm();
+        break;
+
+      case 'message':
+        clearUploadForm();
+        break;
+
+      default:
+        break;
     }
   }
 
@@ -67,14 +85,22 @@ function toggleModal(modalClass, picture) {
     document.addEventListener('keydown', onDocumentKeyDown);
     //addEventListener('click', onClickOutsideModal);
 
-    if (modalType === 'fullsize') {
-      renderFullImg(picture);
+    switch (modalType) {
+      case 'fullsize':
+        renderFullImg(picture);
 
-      if (comments.length > 0) {
-        renderComments(comments);
-      }
+        if (comments.length > 0) {
+          renderComments(comments);
+        }
 
-      loadCommentsBtn.addEventListener('click', onLoadMore);
+        loadCommentsBtn.addEventListener('click', onLoadMore);
+        break;
+
+      case 'message':
+        break;
+
+      default:
+        break;
     }
   };
 

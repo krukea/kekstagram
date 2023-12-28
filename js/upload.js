@@ -1,5 +1,6 @@
 import { isEscapeKey } from './utility.js';
 import { toggleModal } from './modal.js';
+import { sendData } from './api.js';
 import {
   scaleUp,
   scaleDown,
@@ -97,10 +98,26 @@ const validateForm = function (evt) {
 
   if (pristine.validate()) {
     const formData = new FormData(uploadForm);
-    for (const [key, value] of formData) {
-      console.log(`${key}: ${value}\n`);
-    }
-    //uploadForm.submit();
+    /*3.4. Если отправка данных прошла успешно, показывается соответствующее сообщение.
+    Разметку сообщения, которая находится в блоке #success внутри шаблона template,
+    нужно разместить перед закрывающим тегом </body>. Сообщение должно исчезать после нажатия на
+    кнопку .success__button, по нажатию на клавишу Esc и по клику на произвольную область экрана
+    за пределами блока с сообщением. */
+
+    /*3.5. Если при отправке данных произошла ошибка запроса, нужно показать соответствующее сообщение.
+    Разметку сообщения, которая находится в блоке #error внутри шаблона template, нужно разместить
+    перед закрывающим тегом </body>. Сообщение должно исчезать после нажатия на кнопку .error__button,
+    по нажатию на клавишу Esc и по клику на произвольную область экрана за пределами блока с сообщением.
+    В таком случае вся введённая пользователем информация сохраняется, чтобы у него была возможность
+    отправить форму повторно. */
+
+    sendData(formData)
+      .then((response) => {
+        toggleModal('upload', false, { ok: true, msg: '' });
+      })
+      .catch((err) => {
+        toggleModal('upload', false, { ok: false, msg: err.message });
+      });
   }
 };
 
