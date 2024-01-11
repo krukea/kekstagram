@@ -113,10 +113,10 @@ const validateForm = function (evt) {
 
     sendData(formData)
       .then((response) => {
-        toggleModal('upload', false, { ok: true, msg: '' });
+        toggleModal('message', false, { ok: true, msg: '' });
       })
       .catch((err) => {
-        toggleModal('upload', false, { ok: false, msg: err.message });
+        toggleModal('message', false, { ok: false, msg: err.message });
       });
   }
 };
