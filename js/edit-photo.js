@@ -70,8 +70,13 @@ const scaleDown = () => {
 
 const resetScale = () => changeScale(DEFAULT_SCALE);
 
+const resetFilter = () => {
+  console.log(document.querySelector('.img-upload__preview').querySelector('img'));
+  document.querySelector('.img-upload__preview').querySelector('img').style.filter = '';
+};
+
 const hideSlider = () => {
-  imgPreview.style.filter = '';
+  resetFilter();
   sliderContainer.classList.add('hidden');
   sliderElementValue.value = 0;
 };
@@ -84,11 +89,17 @@ const showSlider = () => {
 
 const destroySlider = () => {
   if (sliderElement.noUiSlider) {
+    resetFilter();
+    sliderElementValue.value = 0;
     sliderElement.noUiSlider.destroy();
   }
 };
 
 const createSlider = () => {
+  if (sliderElement.noUiSlider) {
+    return;
+  }
+  
   if (chosenFilter === DEFAULT_FILTER) {
     hideSlider();
   }
@@ -154,4 +165,4 @@ const changeFilter = (evt) => {
   setFilterOptions(newFilter);
 };
 
-export { scaleUp, scaleDown, resetScale, changeFilter, createSlider, destroySlider };
+export { scaleUp, scaleDown, resetScale, changeFilter, resetFilter, createSlider, destroySlider };

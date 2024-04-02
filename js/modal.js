@@ -1,7 +1,7 @@
 import { isEscapeKey } from './utility.js';
 import { fullSizeContainer, renderFullImg, clearFullImg } from './fullsize.js';
 import { renderComments, clearComments } from './comments.js';
-import { clearUploadForm } from './upload.js';
+import { clearUploadForm, createSlider } from './upload.js';
 
 const body = document.body;
 const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
@@ -22,6 +22,7 @@ let modalElement;
 
 function toggleModal(modalType, picture, { ok, msg } = {}) {
   let comments;
+  let closeBtn;
 
   switch (modalType) {
     case 'fullsize':
@@ -31,18 +32,19 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
 
     case 'upload':
       modalElement = document.querySelector('.img-upload__overlay');
+      closeBtn = modalElement.querySelector('.cancel');
       break;
 
     case 'message':
-      const type = !ok ? 'error' : '';
+      const type = !ok ? 'error' : 'success';
       modalElement = createUploadResponseModal(type, msg);
+      body.appendChild(modalElement);
+      closeBtn = modalElement.querySelector(`.${type}__button`);
       break;
 
     default:
       break;
   }
-
-  const closeBtn = modalElement.querySelector('.cancel');
 
   function onDocumentKeyDown(evt) {
     if (isEscapeKey(evt)) {
@@ -64,11 +66,6 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
   }
 
   function closeModal() {
-    body.classList.remove('modal-open');
-    modalElement.classList.add('hidden');
-    closeBtn.removeEventListener('click', closeModal);
-    //document.removeEventListener('click', onClickOutsideModal);
-
     switch (modalType) {
       case 'fullsize':
         loadCommentsBtn.removeEventListener('click', onLoadMore);
@@ -85,18 +82,34 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
         break;
 
       case 'message':
-        clearUploadForm();
+        if (modalElement && !modalElement.classList.contains('error')) {
+          clearUploadForm();
+
+          const uploadModal = document.querySelector('.img-upload__overlay');
+          if (uploadModal) {
+            uploadModal.classList.add('hidden');
+          }
+        }
         break;
 
       default:
         break;
     }
+
+    body.classList.remove('modal-open');
+    modalElement.classList.add('hidden');
+    if (closeBtn) {
+      closeBtn.removeEventListener('click', closeModal);
+    }
+    //document.removeEventListener('click', onClickOutsideModal);
   }
 
   const openModal = () => {
     body.classList.add('modal-open');
     modalElement.classList.remove('hidden');
-    closeBtn.addEventListener('click', closeModal);
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
     document.addEventListener('keydown', onDocumentKeyDown);
     //addEventListener('click', onClickOutsideModal);
 
@@ -111,7 +124,8 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
         loadCommentsBtn.addEventListener('click', onLoadMore);
         break;
 
-      case 'message':
+      case 'upload':
+        createSlider();
         break;
 
       default:

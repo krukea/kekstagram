@@ -113,15 +113,18 @@ const validateForm = function (evt) {
 
     sendData(formData)
       .then((response) => {
-        toggleModal('message', false, { ok: true, msg: '' });
+        toggleModal('upload');
+        toggleModal('message', false, { ok: true, msg: 'Загрузка прошла успешно' });
       })
       .catch((err) => {
+        toggleModal('upload');
         toggleModal('message', false, { ok: false, msg: err.message });
       });
   }
 };
-
+  const imgPreview = document.querySelector('.img-upload__preview').querySelector('img');
 const renderUploadImage = () => {
+
   const uploadInput = document.querySelector('.img-upload__input');
   uploadInput.addEventListener('change', (evt) => {
     evt.preventDefault();
@@ -149,4 +152,4 @@ const renderUploadImage = () => {
   createSlider();
 };
 
-export { renderUploadImage, clearUploadForm };
+export { renderUploadImage, clearUploadForm, createSlider, imgPreview };
