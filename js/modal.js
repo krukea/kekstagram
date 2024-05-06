@@ -1,28 +1,43 @@
 import { isEscapeKey } from './utility.js';
 import { fullSizeContainer, renderFullImg, clearFullImg } from './fullsize.js';
 import { renderComments, clearComments } from './comments.js';
-import { clearUploadForm } from './upload.js';
+import { clearUploadForm, createSlider } from './upload.js';
 
 const body = document.body;
 const loadCommentsBtn = fullSizeContainer.querySelector('.comments-loader');
 
-let modalType;
-let modalElement;
+const createUploadResponseModal = (type, msg = '') => {
+  const modalTemplate = document.querySelector(`#${type}`).content.querySelector(`.${type}`);
+  const modalElement = modalTemplate.cloneNode(true);
+  modalElement.classList.add('hidden');
 
-function toggleModal(modalClass, picture) {
-  let comments;
-
-  if (modalClass === 'big-picture') {
-    modalType = 'fullsize';
-    modalElement = fullSizeContainer;
-
-    comments = picture.comments;
-  } else if (modalClass === 'upload') {
-    modalType = 'upload';
-    modalElement = document.querySelector('.img-upload__overlay');
+  if (type === 'error') {
+    modalElement.querySelector('.error__title').textContent = msg;
   }
 
-  const closeBtn = modalElement.querySelector('.cancel');
+  return modalElement;
+};
+
+let modalElement;
+
+function toggleModal(modalType, picture, { ok, msg } = {}) {
+  let comments;
+  let closeBtn;
+
+  switch (modalType) {
+    case 'fullsize':
+      modalElement = fullSizeContainer;
+      comments = picture.comments;
+      break;
+
+    case 'upload':
+      modalElement = document.querySelector('.img-upload__overlay');
+      closeBtn = modalElement.querySelector('.cancel');
+      break;
+
+    default:
+      break;
+  }
 
   function onDocumentKeyDown(evt) {
     if (isEscapeKey(evt)) {
@@ -31,55 +46,70 @@ function toggleModal(modalClass, picture) {
     }
   }
 
-  /*   function onClickOutsideModal(evt) {
-    if (!evt.target.closest('.big-picture')) {
-      evt.preventDefault();
-      closeModal();
-    }
-  }
- */
   function onLoadMore(evt) {
     evt.preventDefault();
     renderComments(comments, true);
   }
 
   function closeModal() {
+    switch (modalType) {
+      case 'fullsize':
+        loadCommentsBtn.removeEventListener('click', onLoadMore);
+        document.removeEventListener('keydown', onDocumentKeyDown);
+
+        clearFullImg();
+        clearComments();
+        break;
+
+      case 'upload':
+        document.removeEventListener('keydown', onDocumentKeyDown);
+
+        clearUploadForm();
+        break;
+
+      default:
+        break;
+    }
+
     body.classList.remove('modal-open');
     modalElement.classList.add('hidden');
-    closeBtn.removeEventListener('click', closeModal);
-    document.removeEventListener('keydown', onDocumentKeyDown);
-    //document.removeEventListener('click', onClickOutsideModal);
-
-    if (modalType === 'fullsize') {
-      loadCommentsBtn.removeEventListener('click', onLoadMore);
-
-      clearFullImg();
-      clearComments();
-    } else if (modalType === 'upload') {
-      clearUploadForm();
+    if (closeBtn) {
+      closeBtn.removeEventListener('click', closeModal);
     }
+    //document.removeEventListener('click', onClickOutsideModal);
   }
 
   const openModal = () => {
     body.classList.add('modal-open');
     modalElement.classList.remove('hidden');
-    closeBtn.addEventListener('click', closeModal);
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
     document.addEventListener('keydown', onDocumentKeyDown);
     //addEventListener('click', onClickOutsideModal);
 
-    if (modalType === 'fullsize') {
-      renderFullImg(picture);
+    switch (modalType) {
+      case 'fullsize':
+        renderFullImg(picture);
 
-      if (comments.length > 0) {
-        renderComments(comments);
-      }
+        if (comments.length > 0) {
+          renderComments(comments);
+        }
 
-      loadCommentsBtn.addEventListener('click', onLoadMore);
+        loadCommentsBtn.addEventListener('click', onLoadMore);
+        break;
+
+      case 'upload':
+        createSlider();
+        break;
+
+      default:
+        break;
     }
   };
 
   if (modalElement.classList.contains('hidden')) {
-    openModal(picture);
+    openModal();
   } else {
     closeModal();
   }
