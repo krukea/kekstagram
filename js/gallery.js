@@ -13,6 +13,7 @@ const renderGallery = (pictures) => {
     evt.preventDefault();
     const previewId = +previewContainer.dataset.id;
     const picture = pictures.find((item) => item.id === previewId);
+    //showFullSize(picture);
     toggleModal('fullsize', picture);
   });
 

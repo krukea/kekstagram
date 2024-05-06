@@ -1,6 +1,5 @@
 import { isEscapeKey } from './utility.js';
 import { toggleModal } from './modal.js';
-import { sendData } from './api.js';
 import {
   scaleUp,
   scaleDown,
@@ -19,9 +18,15 @@ const MAX_HASHTAGS = 5;
 const HASHTAGS_PATTERN = /^#[a-zа-яё0-9]{1,19}$/i;
 const MAX_DESC_LENGTH = 140;
 
+const SubmitButtonText = {
+  SUBMITTING: 'Отправляю...',
+  IDLE: 'Опубликовать'
+};
+
 const uploadForm = document.querySelector('.img-upload__form');
 const hashTagsInput = uploadForm.querySelector('#hashtags');
 const description = uploadForm.querySelector('#description');
+const submitBtn = uploadForm.querySelector('.img-upload__submit');
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -79,59 +84,33 @@ const validateHashTags = (value) => {
 
 const getHashTagErrorMessage = () => hashErrors.map((item) => TAGS_ERRORS[item]);
 
-//const validateDescription = (value) => value.length <= MAX_DESC_LENGTH;
-
-const validateForm = function (evt) {
-  evt.preventDefault();
-
-  if (hashTagsInput.value !== '') {
-    pristine.addValidator(hashTagsInput, validateHashTags, getHashTagErrorMessage);
-  }
-
-  /* if (description.value !== '') {
-    pristine.addValidator(
-      description,
-      validateDescription,
-      'Длина текста не должна превышать 140 символов'
-    );
-  } */
-
-  if (pristine.validate()) {
-    const formData = new FormData(uploadForm);
-    /*3.4. Если отправка данных прошла успешно, показывается соответствующее сообщение.
-    Разметку сообщения, которая находится в блоке #success внутри шаблона template,
-    нужно разместить перед закрывающим тегом </body>. Сообщение должно исчезать после нажатия на
-    кнопку .success__button, по нажатию на клавишу Esc и по клику на произвольную область экрана
-    за пределами блока с сообщением. */
-
-    /*3.5. Если при отправке данных произошла ошибка запроса, нужно показать соответствующее сообщение.
-    Разметку сообщения, которая находится в блоке #error внутри шаблона template, нужно разместить
-    перед закрывающим тегом </body>. Сообщение должно исчезать после нажатия на кнопку .error__button,
-    по нажатию на клавишу Esc и по клику на произвольную область экрана за пределами блока с сообщением.
-    В таком случае вся введённая пользователем информация сохраняется, чтобы у него была возможность
-    отправить форму повторно. */
-
-    sendData(formData)
-      .then((response) => {
-        toggleModal('upload');
-        toggleModal('message', false, { ok: true, msg: 'Загрузка прошла успешно' });
-      })
-      .catch((err) => {
-        toggleModal('upload');
-        toggleModal('message', false, { ok: false, msg: err.message });
-      });
-  }
+const toggleSubmitBtn = (isDisabled) => {
+  submitBtn.disabled = isDisabled;
+  submitBtn.textContent = isDisabled ? SubmitButtonText.SUBMITTING : SubmitButtonText.IDLE;
 };
-  const imgPreview = document.querySelector('.img-upload__preview').querySelector('img');
-const renderUploadImage = () => {
 
+const onFormSubmit = (callback) => {
+  uploadForm.addEventListener('submit', async (evt) => {
+    evt.preventDefault();
+
+    if (pristine.validate()) {
+      toggleSubmitBtn(true);
+      await callback(new FormData(uploadForm));
+      toggleSubmitBtn();
+    }
+  });
+};
+
+pristine.addValidator(hashTagsInput, validateHashTags, getHashTagErrorMessage, 1, true);
+
+const imgPreview = document.querySelector('.img-upload__preview').querySelector('img');
+const renderUploadImage = () => {
   const uploadInput = document.querySelector('.img-upload__input');
   uploadInput.addEventListener('change', (evt) => {
     evt.preventDefault();
     toggleModal('upload');
   });
 
-  uploadForm.addEventListener('submit', validateForm);
   uploadForm.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
       evt.stopPropagation();
@@ -152,4 +131,4 @@ const renderUploadImage = () => {
   createSlider();
 };
 
-export { renderUploadImage, clearUploadForm, createSlider, imgPreview };
+export { renderUploadImage, clearUploadForm, createSlider, imgPreview, onFormSubmit };

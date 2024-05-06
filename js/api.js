@@ -23,6 +23,19 @@ const load = (route, errorText, method = 'GET', body = null) =>
       throw new Error(errorText);
     });
 
+/* const load = async (route, errorText, method = 'GET', body = null) => {
+  try {
+    const response = await fetch(`${BASE_URL}${route}`, { method, body });
+    if (!response.ok) {
+      throw new Error();
+    }
+
+    return response.json();
+  } catch {
+    throw new Error(errorText);
+  }
+}; */
+
 const getData = () => load(Route.GET_DATA, ErrorText.GET_DATA);
 
 const sendData = (body) => load(Route.SEND_DATA, ErrorText.SEND_DATA, 'POST', body);

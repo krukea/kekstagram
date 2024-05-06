@@ -35,13 +35,6 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
       closeBtn = modalElement.querySelector('.cancel');
       break;
 
-    case 'message':
-      const type = !ok ? 'error' : 'success';
-      modalElement = createUploadResponseModal(type, msg);
-      body.appendChild(modalElement);
-      closeBtn = modalElement.querySelector(`.${type}__button`);
-      break;
-
     default:
       break;
   }
@@ -53,13 +46,6 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
     }
   }
 
-  /*   function onClickOutsideModal(evt) {
-    if (!evt.target.closest('.big-picture')) {
-      evt.preventDefault();
-      closeModal();
-    }
-  }
- */
   function onLoadMore(evt) {
     evt.preventDefault();
     renderComments(comments, true);
@@ -79,17 +65,6 @@ function toggleModal(modalType, picture, { ok, msg } = {}) {
         document.removeEventListener('keydown', onDocumentKeyDown);
 
         clearUploadForm();
-        break;
-
-      case 'message':
-        if (modalElement && !modalElement.classList.contains('error')) {
-          clearUploadForm();
-
-          const uploadModal = document.querySelector('.img-upload__overlay');
-          if (uploadModal) {
-            uploadModal.classList.add('hidden');
-          }
-        }
         break;
 
       default:
